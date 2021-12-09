@@ -1,8 +1,8 @@
-/*
-* Курсова робота
-* Студента 2 курсу ЛЕСНЕНКО Богдана Олександровича
-* Завдання №
-* Тема завдання: Гра Морський Бій
+п»ї/*
+* РљСѓСЂСЃРѕРІР° СЂРѕР±РѕС‚Р°
+* РЎС‚СѓРґРµРЅС‚Р° 2 РєСѓСЂСЃСѓ Р›Р•РЎРќР•РќРљРћ Р‘РѕРіРґР°РЅР° РћР»РµРєСЃР°РЅРґСЂРѕРІРёС‡Р°
+* Р—Р°РІРґР°РЅРЅСЏ в„–
+* РўРµРјР° Р·Р°РІРґР°РЅРЅСЏ: Р“СЂР° РњРѕСЂСЃСЊРєРёР№ Р‘С–Р№
 */
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -11,7 +11,6 @@
 #include <string>
 #include <windows.h>
 #include <mstcpip.h>
-
 
 using namespace std;
 
@@ -25,21 +24,21 @@ using namespace std;
 
 char PCName[30], ClientName[30], Message[200], ServerName[30];
 
-WSAData WSADat; // Свойства WinSock (результат функции WSAStartup)
-SOCKET Sock, Client; // Клиентский сокет
+WSAData WSADat; // РЎРІРѕР№СЃС‚РІР° WinSock (СЂРµР·СѓР»СЊС‚Р°С‚ С„СѓРЅРєС†РёРё WSAStartup)
+SOCKET Sock, Client; // РљР»РёРµРЅС‚СЃРєРёР№ СЃРѕРєРµС‚
 
-//Отримати назву серверу
+//РћС‚СЂРёРјР°С‚Рё РЅР°Р·РІСѓ СЃРµСЂРІРµСЂСѓ
 string GetServerName(){	return ServerName;}
-//Отримати назву клієнта
+//РћС‚СЂРёРјР°С‚Рё РЅР°Р·РІСѓ РєР»С–С”РЅС‚Р°
 string GetClientName(){	return ClientName;}
 
-//Функція переведення вказівника в строку 
+//Р¤СѓРЅРєС†С–СЏ РїРµСЂРµРІРµРґРµРЅРЅСЏ РІРєР°Р·С–РІРЅРёРєР° РІ СЃС‚СЂРѕРєСѓ 
 string CharToStr(char *char_array) {
 	string s;
 	s.assign(char_array);
 return s;
 }
-//Відправлення повідомлення від Сервера до клієнта
+//Р’С–РґРїСЂР°РІР»РµРЅРЅСЏ РїРѕРІС–РґРѕРјР»РµРЅРЅСЏ РІС–Рґ РЎРµСЂРІРµСЂР° РґРѕ РєР»С–С”РЅС‚Р°
 bool SendMessageToClient(string msg) 
 {
 	bool retCode = false;
@@ -47,7 +46,7 @@ bool SendMessageToClient(string msg)
 	if (send(Client, Message, strlen(Message)+1, 0) != SOCKET_ERROR) retCode = true; else retCode = false;
 	return retCode;
 }
-//Отримання повідомлення від клієнта
+//РћС‚СЂРёРјР°РЅРЅСЏ РїРѕРІС–РґРѕРјР»РµРЅРЅСЏ РІС–Рґ РєР»С–С”РЅС‚Р°
 string ReceiveMessageFromClient()
 {
 	bool retCode = false;
@@ -60,7 +59,7 @@ string ReceiveMessageFromClient()
 	else retCode = false;
 	return msg;
 }
-//Відправлення повідомлення від Клієнта до Сервера 
+//Р’С–РґРїСЂР°РІР»РµРЅРЅСЏ РїРѕРІС–РґРѕРјР»РµРЅРЅСЏ РІС–Рґ РљР»С–С”РЅС‚Р° РґРѕ РЎРµСЂРІРµСЂР° 
 bool SendMessageToServer(string msg)
 {
 	bool retCode = false;
@@ -68,7 +67,7 @@ bool SendMessageToServer(string msg)
 	if (send(Sock, Message, strlen(Message)+1, 0) != SOCKET_ERROR) retCode = true; else retCode = false;
 	return retCode;
 }
-//Отримання повідомлення від Сервера
+//РћС‚СЂРёРјР°РЅРЅСЏ РїРѕРІС–РґРѕРјР»РµРЅРЅСЏ РІС–Рґ РЎРµСЂРІРµСЂР°
 string ReceiveMessageFromServer()
 {
 	bool retCode = false; 
@@ -80,71 +79,71 @@ string ReceiveMessageFromServer()
 	else { retCode = false; }	
 	return msg;
 }
-//Функція - зупинка Сервера
+//Р¤СѓРЅРєС†С–СЏ - Р·СѓРїРёРЅРєР° РЎРµСЂРІРµСЂР°
 void StopServer(void) {
-	// Закрытие сокетов и окончание работы с WinSock
+	// Р—Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚РѕРІ Рё РѕРєРѕРЅС‡Р°РЅРёРµ СЂР°Р±РѕС‚С‹ СЃ WinSock
 	closesocket(Sock);
 	closesocket(Client);
 	WSACleanup();
 }
-//Функція - запуск Сервера
+//Р¤СѓРЅРєС†С–СЏ - Р·Р°РїСѓСЃРє РЎРµСЂРІРµСЂР°
 void RunServer(void) {
-	int retCode = WSAStartup(0x0202, &WSADat); // Инициализация WinSock
-								// 0x0202 - версия WinSock. Может быть 1.0, 1.1, 2.0, 2.2
-								// WSADat - структура, куда будут занесены рез. инициализации
-	gethostname(PCName, 30); // Получение имени текущего ПК
+	int retCode = WSAStartup(0x0202, &WSADat); // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ WinSock
+								// 0x0202 - РІРµСЂСЃРёСЏ WinSock. РњРѕР¶РµС‚ Р±С‹С‚СЊ 1.0, 1.1, 2.0, 2.2
+								// WSADat - СЃС‚СЂСѓРєС‚СѓСЂР°, РєСѓРґР° Р±СѓРґСѓС‚ Р·Р°РЅРµСЃРµРЅС‹ СЂРµР·. РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
+	gethostname(PCName, 30); // РџРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё С‚РµРєСѓС‰РµРіРѕ РџРљ
 	sockaddr_in sin;
-	sin.sin_family = AF_INET; // Тип адреса
-	sin.sin_addr.s_addr = 0;  // IP-адрес сервера (пори создании сервера можно 0)
-	sin.sin_port = htons(PORT); // Номер порта сервера
-	Sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // Создание сокета
-	bind(Sock, (sockaddr*)&sin, sizeof(sin)); // Связывание созданного сокета с адресом sin
-	// ***** Ожидание клиента
+	sin.sin_family = AF_INET; // РўРёРї Р°РґСЂРµСЃР°
+	sin.sin_addr.s_addr = 0;  // IP-Р°РґСЂРµСЃ СЃРµСЂРІРµСЂР° (РїРѕСЂРё СЃРѕР·РґР°РЅРёРё СЃРµСЂРІРµСЂР° РјРѕР¶РЅРѕ 0)
+	sin.sin_port = htons(PORT); // РќРѕРјРµСЂ РїРѕСЂС‚Р° СЃРµСЂРІРµСЂР°
+	Sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // РЎРѕР·РґР°РЅРёРµ СЃРѕРєРµС‚Р°
+	bind(Sock, (sockaddr*)&sin, sizeof(sin)); // РЎРІСЏР·С‹РІР°РЅРёРµ СЃРѕР·РґР°РЅРЅРѕРіРѕ СЃРѕРєРµС‚Р° СЃ Р°РґСЂРµСЃРѕРј sin
+	// ***** РћР¶РёРґР°РЅРёРµ РєР»РёРµРЅС‚Р°
 //	cout << "Hostname = "<< hostname << endl;
-	cout << "Чекаємо на клієнта..." << endl;
+	cout << "Р§РµРєР°С”РјРѕ РЅР° РєР»С–С”РЅС‚Р°..." << endl;
 
-	listen(Sock, SOMAXCONN); // Прослушивание сокета сервером (для подключения клиента)
-	Client = accept(Sock, (sockaddr*)&sin, 0); // Ожидание клиента
-	DWORD timeout = 2000; // таймаут для отримання повідомлення
-	setsockopt(Client, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)); // встановлення таймаута на отримання повідомлення
-	recv(Client, ClientName, 30, 0); // Получение имени компьютера клиента
-	send(Client, PCName, strlen(PCName) + 1, 0); // Отправка имени этого компьютера (сервера)
-	cout << "Клієнта ( " << GetClientName() << " ) підключено!" << endl;
+	listen(Sock, SOMAXCONN); // РџСЂРѕСЃР»СѓС€РёРІР°РЅРёРµ СЃРѕРєРµС‚Р° СЃРµСЂРІРµСЂРѕРј (РґР»СЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ РєР»РёРµРЅС‚Р°)
+	Client = accept(Sock, (sockaddr*)&sin, 0); // РћР¶РёРґР°РЅРёРµ РєР»РёРµРЅС‚Р°
+	DWORD timeout = 2000; // С‚Р°Р№РјР°СѓС‚ РґР»СЏ РѕС‚СЂРёРјР°РЅРЅСЏ РїРѕРІС–РґРѕРјР»РµРЅРЅСЏ
+	setsockopt(Client, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)); // РІСЃС‚Р°РЅРѕРІР»РµРЅРЅСЏ С‚Р°Р№РјР°СѓС‚Р° РЅР° РѕС‚СЂРёРјР°РЅРЅСЏ РїРѕРІС–РґРѕРјР»РµРЅРЅСЏ
+	recv(Client, ClientName, 30, 0); // РџРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё РєРѕРјРїСЊСЋС‚РµСЂР° РєР»РёРµРЅС‚Р°
+	send(Client, PCName, strlen(PCName) + 1, 0); // РћС‚РїСЂР°РІРєР° РёРјРµРЅРё СЌС‚РѕРіРѕ РєРѕРјРїСЊСЋС‚РµСЂР° (СЃРµСЂРІРµСЂР°)
+	cout << "РљР»С–С”РЅС‚Р° ( " << GetClientName() << " ) РїС–РґРєР»СЋС‡РµРЅРѕ!" << endl;
 }
-//Функція - запуск Клієнта
+//Р¤СѓРЅРєС†С–СЏ - Р·Р°РїСѓСЃРє РљР»С–С”РЅС‚Р°
 void RunClient(void) {
-	int retCode = WSAStartup(0x0202, &WSADat); // Инициализация WinSock
-								 // 0x0202 - версия WinSock. Может быть 1.0, 1.1, 2.0, 2.2
-								 // WSADat - структура, куда будут занесены рез. инициализации
+	int retCode = WSAStartup(0x0202, &WSADat); // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ WinSock
+								 // 0x0202 - РІРµСЂСЃРёСЏ WinSock. РњРѕР¶РµС‚ Р±С‹С‚СЊ 1.0, 1.1, 2.0, 2.2
+								 // WSADat - СЃС‚СЂСѓРєС‚СѓСЂР°, РєСѓРґР° Р±СѓРґСѓС‚ Р·Р°РЅРµСЃРµРЅС‹ СЂРµР·. РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
 //	char hostnameServer[30] = "127.0.0.1"; char* hns;
-	gethostname(PCName, 30); // Получение имени текущего ПК
-//	cout << "IP сервера...(по умолчанию 127,0,0,1)" << endl;
+	gethostname(PCName, 30); // РџРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё С‚РµРєСѓС‰РµРіРѕ РџРљ
+//	cout << "IP СЃРµСЂРІРµСЂР°...(РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 127,0,0,1)" << endl;
 //	const char* SIP = (hostnameServer)?hostnameServer:SERVERIP;
 	sockaddr_in sin;
-	sin.sin_family = AF_INET; // Тип адреса
-	sin.sin_addr.s_addr = inet_addr(SERVERIP); // IP-адрес сервера (пори создании сервера можно 0)
-	sin.sin_port = htons(PORT); // Номер порта сервера
-	Sock = socket(AF_INET, SOCK_STREAM, 0); // Создание сокета
-	DWORD timeout = 2000; // зміна таймаута
-	setsockopt(Sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)); // встановлення таймаута
-	// ***** Подключение к серверу
-	cout << "Підключення до сервера..." << endl;
+	sin.sin_family = AF_INET; // РўРёРї Р°РґСЂРµСЃР°
+	sin.sin_addr.s_addr = inet_addr(SERVERIP); // IP-Р°РґСЂРµСЃ СЃРµСЂРІРµСЂР° (РїРѕСЂРё СЃРѕР·РґР°РЅРёРё СЃРµСЂРІРµСЂР° РјРѕР¶РЅРѕ 0)
+	sin.sin_port = htons(PORT); // РќРѕРјРµСЂ РїРѕСЂС‚Р° СЃРµСЂРІРµСЂР°
+	Sock = socket(AF_INET, SOCK_STREAM, 0); // РЎРѕР·РґР°РЅРёРµ СЃРѕРєРµС‚Р°
+	DWORD timeout = 2000; // Р·РјС–РЅР° С‚Р°Р№РјР°СѓС‚Р°
+	setsockopt(Sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)); // РІСЃС‚Р°РЅРѕРІР»РµРЅРЅСЏ С‚Р°Р№РјР°СѓС‚Р°
+	// ***** РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє СЃРµСЂРІРµСЂСѓ
+	cout << "РџС–РґРєР»СЋС‡РµРЅРЅСЏ РґРѕ СЃРµСЂРІРµСЂР°..." << endl;
 
 	if (connect(Sock, (sockaddr*)&sin, sizeof(sin)) == SOCKET_ERROR) {
-		cout << "Помилка підключення до сервера!\n";
+		cout << "РџРѕРјРёР»РєР° РїС–РґРєР»СЋС‡РµРЅРЅСЏ РґРѕ СЃРµСЂРІРµСЂР°!\n";
 		system("pause");
 		goto End;
 	}
-	send(Sock, PCName, strlen(PCName) + 1, 0); // Отправка имени этого компьютера (клиента)
-	recv(Sock, ServerName, 30, 0); // Получение имени компьютера сервера
-	cout << "Підключено до сервера \"" << GetServerName() << "\" проведено!" << endl;
+	send(Sock, PCName, strlen(PCName) + 1, 0); // РћС‚РїСЂР°РІРєР° РёРјРµРЅРё СЌС‚РѕРіРѕ РєРѕРјРїСЊСЋС‚РµСЂР° (РєР»РёРµРЅС‚Р°)
+	recv(Sock, ServerName, 30, 0); // РџРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё РєРѕРјРїСЊСЋС‚РµСЂР° СЃРµСЂРІРµСЂР°
+	cout << "РџС–РґРєР»СЋС‡РµРЅРѕ РґРѕ СЃРµСЂРІРµСЂР° \"" << GetServerName() << "\" РїСЂРѕРІРµРґРµРЅРѕ!" << endl;
 	return;
 
 End: {}
 	//StopClient();
 }
-//Функція - зупинка Клієнта
-void StopClient(void) {// Закрытие сокетов и окончание работы с WinSock
+//Р¤СѓРЅРєС†С–СЏ - Р·СѓРїРёРЅРєР° РљР»С–С”РЅС‚Р°
+void StopClient(void) {// Р—Р°РєСЂС‹С‚РёРµ СЃРѕРєРµС‚РѕРІ Рё РѕРєРѕРЅС‡Р°РЅРёРµ СЂР°Р±РѕС‚С‹ СЃ WinSock
 	closesocket(Sock);
 	WSACleanup();
 }

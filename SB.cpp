@@ -4,6 +4,7 @@
 * Завдання №
 * Тема завдання: Гра Морський Бій
 */
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
 #include <string>
@@ -16,18 +17,17 @@
 #include <cstdlib>
 #include <sstream>
 #include <vector>
+#include <time.h>
 #include <Windows.h>
 
 using namespace std;
 
 #include "SB_TCP.h"
-//#include "SB_Test.h"
-//#include "SB_Def.h"
 #include "SB.h"
 
-//using namespace std;
 
 #pragma region Системний: БІБЛІОТЕКИ для текстового відображення значень
+
 //Ініціалізація бібліотек
 void Init_Lib()
 {
@@ -117,21 +117,19 @@ int Spiner(int i)
 //Очистити екран під повідомлення
 void clearMsgPlace(int p)
 {
-	int wy = p; // 2 точка на екрані - для стирання повідомлення
-	int ws = 7 + sbf; // 1 точка на екрані - для стирання повідомлення
-	//gotoxy(0, ws - 1);
-	for (int f = ws; f <= wy + 1; f++) { gotoxy(0, f); //SetColor(Black, Black); 
-	cout << string(scrsize, ' ') << endl; }
-	gotoxy(0, ws - 1);
+	clearMsgPlace(p, 6 + sbf);
 }
 //Очистити екран під повідомлення
 void clearMsgPlace(int p, int fp = 7 + sbf)
 {
-	int wy = p; // 2 точка на екрані - для стирання повідомлення
-	int ws = fp; // 1 точка на екрані - для стирання повідомлення
-	for (int f = ws; f <= wy + 1; f++) { gotoxy(0, f); //SetColor(Black, Black);
-	cout << string(scrsize, ' ') << endl; }
-	gotoxy(0, ws - 1);
+	int wend = p; // 2 точка на екрані - для стирання повідомлення
+	int wstart = fp; // 1 точка на екрані - для стирання повідомлення
+	for (int f = wstart; f <= wend + 1; f++) { 
+		gotoxy(0, f); //SetColor(Black, Black);
+	cout << "\r" <<setw(2) << string(scrsize - 1, ' ');
+	cout.flush();
+	}
+	gotoxy(0, wstart - 1);
 }
 //Повідомити про помилковий постріл
 int ShowErrorShot(Player* pl, myShot sh)
@@ -156,13 +154,13 @@ int ShowErrorShot(Player* pl, myShot sh)
 	system("pause");
 	p = wherey();
 	return p;
-
 }
 //Вивести повідомлення на екран
 void Wait(string strmsg)
 {
-	clearMsgPlace(8 + sbf, 6 + sbf);
-	std::cout << strmsg << endl;
+	clearMsgPlace(7 + sbf, 6 + sbf);
+	cout << "\r" << strmsg << string(scrsize - strmsg.length(), ' ');
+	cout.flush();
 }
 //Отримати координати пострілу від людини
 string ascForShot(Player* pl)
@@ -176,7 +174,6 @@ string ascForShot(Player* pl)
 	SetColor(); cin >> _Shot;
 	return _Shot;
 }
-
 #pragma endregion
 
 #pragma region Desks function
@@ -269,8 +266,6 @@ void Ship::ReservAround(int** mtx, PointVal pv)
 			(mtx[dsk.y][dsk.x + 1] == (int)PointVal::reserv || 
 				mtx[dsk.y][dsk.x + 1] == (int)PointVal::sea)) mtx[dsk.y][dsk.x + 1] = (int)pv;
 	}
-
-
 };
 
 Desk* Ship::SearchDesk(Point* pnt) {
@@ -279,7 +274,6 @@ Desk* Ship::SearchDesk(Point* pnt) {
 Desk* Ship::SearchDesk(int x, int y) {
 	Desk dsk(x, y);
 	Desk* search_dsk = nullptr;
-	//Ship* srch_ship = nullptr;
 	if (dsk.valid())
 	{
 			auto searchDesk = find(Desks.begin(), Desks.end(), dsk);
@@ -321,28 +315,6 @@ Ship* Escadra::SearchShip(int x, int y) // знайти корабель в ес
 	}
 	return srch_ship;
 }
-//Додати ЗНАЙТИ Корабель в Ескадрі
-
-//bool Escadra::GetShip(int x, int y, Ship* ship1) {
-//	Desk* dsk = new Desk(x, y);
-//	bool retCode = false;
-//	for (auto& ship : Ships)
-//	{
-//		auto searchDesk = find(ship.Desks.begin(), ship.Desks.end(), dsk);
-//		if (searchDesk != ship.Desks.end())
-//		{
-//			ship1 = &ship;
-//			retCode = true;
-//		}
-//		else
-//		{
-//			ship1 = NULL;
-//			retCode = false;
-//		}
-//	}
-//	delete dsk;
-//	return retCode;
-//};
 #pragma endregion
 
 #pragma region Class-Functions - Player - ГРАВЕЦЬ
@@ -414,18 +386,12 @@ bool Player::Add_AllShot(string val, int** mtx)
 		if (ms.logic(mtx)) {}
 		else if (ms.uniq(mtx)) {}
 		myNewShots.push_back(ms);
-		//ms.ShotError.push_back(enShotErr::NotValid);
 		return false;		//не додавати
-		
-		//myShotsRes = ShotRes::New;
-		//ms.shres = ShotRes::New;
-		//myNewShots.push_back(ms);
 	}
 }
 //Додати постріл з класу ПОСТРІЛ в ГРАВЕЦЬ--Нові постріли
 bool Player::Add_Shot(myShot ms, int** mtx)
 {
-	//	myShot ms(val);
 	if (ms.valid(mtx) == true)
 	{
 		ms.shres = ShotRes::New;
@@ -440,7 +406,6 @@ bool Player::Add_Shot(myShot ms, int** mtx)
 		if (ms.logic(mtx)) {}
 		else if (ms.uniq(mtx)) {}
 		myNewShots.push_back(ms);*/
-	
 		return false;
 		//не додавати
 	}
@@ -526,10 +491,7 @@ vector<myShot> Player::Add_Shots(string ss, int** mtx) {
 		outputArray.push_back(val); c++;
 	}
 	//Передача масиву нових пострілів в клас Ігрок
-	for (auto& val : outputArray) {
-		//char x1 = val[0];
-		Add_Shot(val, mtx); this->strMyShots += val + ",";
-	}
+	for (auto& val : outputArray) {		Add_Shot(val, mtx); this->strMyShots += val + ","; }
 	return this->myNewShots;
 };
 
@@ -585,15 +547,21 @@ void Get_Info_From_File(string fname)
 void SaveScore(Player *pl1, Player* pl2) {
 	fstream fs("SB_Score.txt", ios::app); //, ios::app
 	fs.clear();
+	time_t _time = time(NULL);
+	char buf[80]; 
+	struct tm *tstruct = localtime(&_time);
+	strftime(buf, sizeof(buf), "%d.%m.%Y %X", tstruct);
 	if (fs.is_open())
 	{
-		fs << "[" << vGame_Mode[(int)_Game_Mode] << " / " << vGame_Place[(int)_Game_Place] << "]";
+		fs << buf << " ";
 		fs << Player_stan[(static_cast<int>(pl1->ps))] << ": ";
- 		fs << pl1->Name << "(" << Player_type[(static_cast<int>(pl1->pm))] << ":" << Player_level[(static_cast<int>(pl1->level))] << ")";
-		fs << " пострілів " << pl1->shot << " влучень " << pl1->kill; fs << " против ";
-		fs << Player_stan[(static_cast<int>(pl2->ps))] << ": ";	
-		fs << pl2->Name << "(" << Player_type[(static_cast<int>(pl2->pm))] << ":" << Player_level[(static_cast<int>(pl2->level))] << ")";
-		fs << " пострілів " << pl2->shot << " влучень " << pl2->kill; 
+		fs << pl1->Name << "(" << Player_type[(static_cast<int>(pl1->pm))] << ")"; //<< ":" << Player_level[(static_cast<int>(pl1->level))] 
+		fs << " постр=" << pl1->shot << " влуч.=" << pl1->kill;
+		fs << " *VS* ";
+		fs << Player_stan[(static_cast<int>(pl2->ps))] << ": ";
+		fs << pl2->Name << "(" << Player_type[(static_cast<int>(pl2->pm))] << ")"; //<< ":" << Player_level[(static_cast<int>(pl2->level))]
+		fs << " постр=" << pl2->shot << " влуч." << pl2->kill;
+		fs << " [" << vGame_Mode[(int)_Game_Mode] << " / " << vGame_Place[(int)_Game_Place] << "] ";
 		fs << endl;
 		fs.close();
 	}
@@ -643,7 +611,6 @@ void M_Info()
 		}
 	}
 }
-//void SB_Test();
 //Меню налаштування
 void M_Setting()
 {
@@ -675,22 +642,19 @@ void M_Setting()
 				if (_Game_Place == enGame_Place::server) StopServer();
 				else if (_Game_Place == enGame_Place::client) StopClient();
 			}
-			//_gm = (mode == true) ? 0 : _gm;			break;
-
 		}
 		case 6: {
 			if (_Game_Mode == enGame_Mode::net)
 			{
 				if (_Game_Place == enGame_Place::server) {
 					system("cls");
-					Show_MainHead(); RunServer(); ChatSC();//SendMessageToClient(pl1->Name); 		
+					Show_MainHead(); RunServer(); ChatSC();
 				}
 				else {
 					system("cls");
 					Show_MainHead(); RunClient(); ChatSC();
-					//pl1->Name=ReceiveMessageFromServer(); 	
 				}
-			}//			_gm = (mode == true) ? 0 : _gm;
+			}
 			break;
 		}
 		case 7: {	Test_SB();}
@@ -1173,15 +1137,14 @@ void WaitSMS(string strmsg, Player* pl, int** mtx)
 	int spin = 0, c = 0;
 	bool cont = true;
 	string msg;
-	clearMsgPlace(8 + sbf, 7 + sbf); std::cout << strmsg;
+	clearMsgPlace(8 + sbf, 7 + sbf); 
+	cout << "\r"<<strmsg << string(scrsize - strmsg.length(), ' ');
+	cout.flush();
 	while (cont)
 	{
 		spin = Spiner(spin);
-		//Sleep(1000);
 		msg = (_Game_Place == enGame_Place::client) ? ReceiveMessageFromServer() : ReceiveMessageFromClient();
 		cont = ApplyCommandFromMessage(msg, pl, mtx);
-		//if (c > 1000) cont = false; 
-		//else c++;
 	}
 }
 // Циклічний чат між сервером та клієнтом
@@ -1207,35 +1170,11 @@ void Game_ChatSC1() {
 				for (auto& s : newcom.SCCs) { msg += s.message + newcom.separator; }
 				SendMessageToClient(msg);
 				msg = ReceiveMessageFromClient();
-				//sccs.myGetMessage(msg);
-				//if (step == 0) SendSMS(SC_Com_type::setPl1Name, pl1->Name);
-				//if (step == 1) SendSMS(SC_Com_type::setPl2Name, pl2->Name);
-				//if (step == 3) SendSMS(SC_Com_type::setPl1type, to_string(int(pl2->pm)));
-				//if (step == 4) SendSMS(SC_Com_type::setPl2type, to_string(int(pl1->pm)));
-				//if (step == 5) SendSMS(SC_Com_type::setPl1level, to_string(int(pl1->level)));
-				//if (step == 6) SendSMS(SC_Com_type::setPl2level, to_string(int(pl2->level)));
-				//Sleep(1000);
-				//step++; if (step > 5) cont = false;
-//				cout << "Send mess = " << to_string(int(pl2->pm));
-				//cout << msg << endl;
-//				cout << msg << endl;
-//				SendSMS(SC_Com_type::setPl2Name, pl2->Name);
-				//SendMessageToClient(typ + "&" + msg);
 				cont = false;
 				break;
 			}
 			case enGame_Place::client:
 			{
-				//string msg = ReceiveMessageFromServer();
-				//cout << msg << endl;
-				//std::cout << msg << endl;
-				//SC_Comands sccs;
-				//sccs.myGetMessage(msg);
-				//if(sccs.SCCs.size()>0){
-				////sccs.SCCs[0].command;
-				//SendSMS(SC_Com_type::ans_ok, to_string((int)sccs.SCCs[0].type) + "-" + sccs.SCCs[0].command);
-				//}
-				//step++; if (step > 5) 
 				cont = ApplyCommandFromMessage(ReceiveMessageFromServer(),nullptr,nullptr);
 				SendSMS(SC_Com_type::ans_ok, "Принято");
 				cont = false;
@@ -1293,31 +1232,14 @@ void SendSMS(SC_Com_type type, string msg)
 	case enGame_Place::server:
 	{
 		SendMessageToClient(to_string((int)type) + "&" + msg);
-		//cout << "S-C" << to_string((int)type) + "&" + msg << endl;
 	} break;
 	case enGame_Place::client:
 	{
 		SendMessageToServer(to_string((int)type) + "&" + msg);
-		//cout << "C-S" << to_string((int)type) + "&" + msg << endl;
 	} break;
 	default: break;
 	}
 }
-//відправити повідомлення сервер-клієнт
-//void SmS2C(SC_Com_type type, string msg)
-//{
-//	if (_Game_Mode == enGame_Mode::net && _Game_Place == enGame_Place::server) {
-//		SendMessageToClient(to_string((int)type) + "&" + msg);
-//	}
-//}
-//відправити повідомлення клієнт-сервер
-//void SmC2S(SC_Com_type type, string msg)
-//{
-//	if (_Game_Mode == enGame_Mode::net && _Game_Place == enGame_Place::client) {
-//		SendMessageToServer(to_string((int)type) + "&" + msg);
-//	}
-//}
-
 //Прийняти та опрацювати повідомлення від мережі
 bool ApplyCommandFromMessage(string command, Player* pl = nullptr,int**mtx=nullptr )
 {
@@ -1341,14 +1263,13 @@ bool ApplyCommandFromMessage(string command, Player* pl = nullptr,int**mtx=nullp
 		case SC_Com_type::sendSMS: cout << cmd.command;  break; // вивести повідомлення на екран
 		case SC_Com_type::ansShot:
 		{
-			Wait("Отримано Постріл" + cmd.command + " від гравця " + pl->Name);
+			Wait("Отримано Постріл " + cmd.command + " від гравця " + pl->Name);
 			pl->strMyShots = cmd.command;
 			cont = false;//виходимо з циклу чату 
 		}	break; 
-		//case SC_Com_type::ascShot: cout << cmd.command;  break;
 		case SC_Com_type::ansResult: 
 		{
-			Wait("Отримано РЕЗУЛЬТАТ Пострілу " + cmd.command + " [" + Shot_Result[stoi(cmd.command)] + "] від гравця " + pl->Name);
+			Wait("Отримано РЕЗУЛЬТАТ " + cmd.command + " [" + Shot_Result[stoi(cmd.command)] + "] від " + pl->Name);
 			pl->strMyShotsRes = cmd.command;
 			cont = false;//виходимо з циклу чату
 		}	break;
@@ -1356,7 +1277,6 @@ bool ApplyCommandFromMessage(string command, Player* pl = nullptr,int**mtx=nullp
 		}
 	}
 	return cont;
-	//system("pause");
 }
 // Циклічний чат між сервером та клієнтом
 void ChatSC() {
@@ -1408,21 +1328,17 @@ string GetUserShot(Player* pl, int **mtx)
 		pl->myNewShots.clear();
 		clearMsgPlace(p,7+sbf);
 		_Shot = ascForShot(pl);
-		//pl->NewShots.clear();
 		if (_Shot == "0")
 		{
 			repeat = false;
 			pl->myShotsRes = ShotRes::Exit;
 		}
 		else {
-		//	vector<myShot> myS1 = pl->Add_Shots(_Shot, mtx);
-			//if (myS1.size() > 0)
 			{
 				for (auto& s : pl->Add_AllShots(_Shot, mtx))
 				{
-					if (s.valid(mtx) == true)// && s.logic(mtx) == true && s.uniq() == true)
+					if (s.valid(mtx) == true)
 					{
-						//pl->myNewShots.push_back(s);
 						repeat = (repeat) ? true : false;
 					}
 					else
@@ -1551,7 +1467,6 @@ string GetShot(Player* pl, int** mtx)
 	return s_shots;
 }
 // Проведення пострілу на карту
-
 string MakeShot(Player* pl, int** mtx, Player* pl_e=nullptr)
 {
 	string answ;
@@ -1623,19 +1538,13 @@ string MakeShot(Player* pl, int** mtx, Player* pl_e=nullptr)
 					}
 					pl->CompHit = true;
 				}
-				//get ship
-				//if (pl_enemy->myEscadra->GetShip(pt->x, pt->y, ship) == true) { ship->stan = ShipStan::wound; }
-				//if (newS.shres == ShotRes::New)
-				if (pl_e != nullptr)
+				if (pl_e != nullptr) // для локальної таблиці бою
 				{
 					Ship *enemy_ship = pl_e->myEscadra->SearchShip(pt->x,pt->y);
 					if (enemy_ship != nullptr)
 					{
-						ShipStan en_st = enemy_ship->Kill(pt->x, pt->y);
-						//Desk *dsk = enemy_ship->SearchDesk(pt->x, pt->y);
-//						if (dsk != nullptr) 
+						ShipStan en_st = enemy_ship->Kill(pt->x, pt->y); // Знаходимо та вбиваємо корабель - повертаємо стан корабля
 						{						
-	//						ShipStan en_st= enemy_ship->Kill(dsk);
 							switch (en_st)
 							{
 							case ShipStan::wound: 
@@ -1659,6 +1568,7 @@ string MakeShot(Player* pl, int** mtx, Player* pl_e=nullptr)
 				} 
 				else	
 				{
+					//Для мережевої гри
 					if (mtx[pt->y][pt->x] == (int)PointVal::waswound)
 					{
 						mtx[pt->y][pt->x] = (int)PointVal::wound;
@@ -1736,14 +1646,12 @@ string MakeShot(Player* pl, int** mtx, Player* pl_e=nullptr)
 		}
 		answ += to_string((int)newS.shres) + ",";
 	}
-	//delete ship;
 	return answ;
 }
 
 //Функція пострілів
 void Shot(Player* pl, int** mtx, Player* pl_e, int** mtx_e) //, Player* pl_enemy
 {
-	/**/
 	do
 	{
 		string _shots;
@@ -1783,7 +1691,7 @@ void Shot(Player* pl, int** mtx, Player* pl_e, int** mtx_e) //, Player* pl_enemy
 				pl->Add_AllShots(_shots,mtx);//додаємо новий постріл до гравця
 				_shotsRes = MakeShot(pl, mtx, pl_e); //опрацьовуємо постріл та отримуємо результат пострілу
 				SendSMS(SC_Com_type::ansResult, _shotsRes); // надсилаємо результат пострілу
-				Wait("Відправлено РЕЗУЛЬТАТ " + _shotsRes + " [" + Shot_Result[stoi(_shotsRes)] + "] Пострілу " + pl->strMyNewShots() + " на гравця " + pl->Name);
+				Wait("Відправлено РЕЗУЛЬТАТ " + _shotsRes + " [" + Shot_Result[stoi(_shotsRes)] + "] Пострілу " + pl->strMyNewShots() + " на " + pl->Name);
 				break;
 			default: break;
 			}
@@ -1801,14 +1709,12 @@ int** MakeMtx(int sizesbf)
 	return mtx;
 }
 //Функція ГРИ
-void M_Game()
+long M_Game()
 {
 	bool cont = true;
 	srand(static_cast<unsigned int>(time(NULL))); // генератор довільних чисел
-	mtx1= MakeMtx(sbf);
-	mtx2= MakeMtx(sbf);
-	//mtx1 = new int* [sbf];	for (int i = 0; i < sbf; i++)	mtx1[i] = new int[sbf]; //ігрове поле 1
-	//mtx2 = new int* [sbf];	for (int i = 0; i < sbf; i++)	mtx2[i] = new int[sbf]; //ігрове поле 2
+	mtx1= MakeMtx(sbf); //створюємо поле бою для 1 гравця
+	mtx2= MakeMtx(sbf); //створюємо поле бою для 2 гравця
 	Game_ChatSC1(); // початковий чат для обміну параметрами сервера з клієнтом
 	if (_Game_Mode == enGame_Mode::net && _Game_Place == enGame_Place::client)
 	{
@@ -1816,7 +1722,6 @@ void M_Game()
 		else CHM_NetClientPlayer(1, pl1);
 	}
 	system("cls");	gotoxy(0, 0); cout << "Гра";
-
 	//По режиму ГРИ вибрати генерацію ІГРОВИХ ПОЛІВ
 	switch (_Game_Mode)
 	{
@@ -1872,12 +1777,12 @@ void M_Game()
 	//Початкове відображення ігрового поля
 	Show2(mtx1, mtx2, pl1, pl2);
 	//Головний цикл ГРИ 
+	clock_t t_start=clock();
 	do
 	{
 		//Перший постріл ГРАВЦЯ 1 - виконується ПОКИ є можливість пострілу
 		do
-		{
-			
+		{		
 			Shot(pl1,mtx2, pl2, mtx1);
 			Show2(mtx1, mtx2, pl1, pl2);
 			if (pl1->kill == WIN_CNT)
@@ -1888,7 +1793,6 @@ void M_Game()
 				break;
 			}
 		} while (pl1->myShotsRes == ShotRes::TryShot);
-
 		//Перехід ХОДУ постріл ГРАВЦЯ 2 - виконується ПОКИ є можливість пострілу
 		do
 		{	
@@ -1906,13 +1810,14 @@ void M_Game()
 	// виконувати доки Є можливість продовжувати або ОДИН  з гравців не ПРИПИНИВ ГРУ
 	} while (cont == true && pl1->myShotsRes != ShotRes::Exit && pl2->myShotsRes != ShotRes::Exit);
 	//Відображення на екрані завершення ГРИ
+	clock_t t_end=clock();
 	gotoxy(0, 0); cout << "Гра ЗАВЕРШЕНА" << endl;
 	// Зміна стану гравців ЯКЩО ОДИН  з гравців не ПРИПИНИВ ГРУ
 	if (pl1->myShotsRes == ShotRes::Exit) { pl1->ps = Player_Stat::Surrendered; pl2->ps = Player_Stat::Winner;}
 	if (pl2->myShotsRes == ShotRes::Exit) { pl2->ps = Player_Stat::Surrendered; pl1->ps = Player_Stat::Winner; }
 	//Кінцеве відображення ігрового поля
 	Show2(mtx1, mtx2, pl1, pl2);
-	cout << endl;
+	cout << endl <<" Гра тривала: " << (t_end - t_start) / CLOCKS_PER_SEC << " сек. ";
 	system("pause");
 //Трохи почисти пам'ять - видалення масивів ігрових полів
 	if (mtx1 != nullptr) delete []mtx1;
@@ -1925,21 +1830,16 @@ void M_Game()
 	{
 		StopServer();
 	}
+	return (t_end - t_start);
 }
 #pragma region SeaBattle_Shot_Function
 void Test_SB()
 {
 	fstream Test_out("SB_Test.txt", ios::app); //, ios::app
 	Test_out.clear();
-	//remove("SB_Test.txt");
-//	if (Test_out.is_open()) Test_out.close();
 	if (Test_out.is_open())
 	{
 		sbf = 10; Test_MakeMtx("Створення ігрового поля розміром", 10, Test_out);
-		sbf = 20; Test_MakeMtx("Створення ігрового поля розміром", 20, Test_out);
-		sbf = 30; Test_MakeMtx("Створення ігрового поля розміром", 30, Test_out);
-		sbf = 40; Test_MakeMtx("Створення ігрового поля розміром", 40, Test_out);
-		sbf = 50; Test_MakeMtx("Створення ігрового поля розміром", 50, Test_out);
 		Test_out.close();
 	}
 }
@@ -1995,7 +1895,9 @@ int main()
 		{
 		case 1: { M_Info();				} break;
 		case 2: { M_Setting();			} break;
-		case 3: { CHM_SettingGameMode(true); M_Game();		SaveScore(pl1,pl2);
+		case 3: { 
+			CHM_SettingGameMode(true); 
+			M_Game();		SaveScore(pl1, pl2);
 			pl1->pm = Player_Mode::comp;
 			pl2->pm = Player_Mode::comp;	} break;
 		case 4: { ShowScore();			} break;
