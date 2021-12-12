@@ -260,12 +260,12 @@ struct SC_Comands
 //Структура Point - Точка
 struct Point {
 public: int x, y;
-	  int bound = sbf;
-//Створення ТОЧКИ за межами
+	 //  int bound = sbf;
+	//Створення ТОЧКИ за межами
 	  Point() { x = -1; y = -1; };
 	  Point(int x1, int y1) { x = x1; y = y1; };
 	  bool valid() {
-		  if (x < 0 || y < 0 || x > bound - 1 || y > bound - 1) return false;
+		  if (x < 0 || y < 0 || x > sbf - 1 || y > sbf - 1) return false;
 		  else return true;
 	  }
 	  bool operator==(const Point& pnt) { return (x == pnt.x && y == pnt.y); } // зміна оператора рівняння ТОЧОК
@@ -277,7 +277,7 @@ struct Desk : public Point{
 public: 
 	  int value = 0;
 	  bool alive = true; // живая ПАЛУБА
-	  int bound = sbf;
+	 // int bound = sbf;
 	  Desk() { x = -1; y = -1; }; //створення пустої палуби
 	  Desk(int x1, int y1) { x = x1; y = y1; }; // створення палуби з координатами х,у
 	  Desk(Point pt) { x = pt.y; y = pt.y; }; // створення палуби з точкою

@@ -1166,6 +1166,8 @@ void Game_ChatSC1() {
 				newcom.mySetMessage(SC_Com_type::setPl2type, to_string(int(pl1->pm)));
 				newcom.mySetMessage(SC_Com_type::setPl1level, to_string(int(pl1->level)));
 				newcom.mySetMessage(SC_Com_type::setPl2level, to_string(int(pl2->level)));
+				newcom.mySetMessage(SC_Com_type::setSBF, to_string(sbf));
+				newcom.mySetMessage(SC_Com_type::setCntShot, to_string(cnt_shot));
 				string msg;
 				for (auto& s : newcom.SCCs) { msg += s.message + newcom.separator; }
 				SendMessageToClient(msg);
@@ -1186,7 +1188,7 @@ void Game_ChatSC1() {
 		else { cont = false; }
 	}
 }
-//Ігровий чат - не використовується
+//Ігровий чат - не використовується////
 void Game_ChatSC(int place) {
 	bool cont = true;
 	int spin = 0;
@@ -1250,6 +1252,7 @@ bool ApplyCommandFromMessage(string command, Player* pl = nullptr,int**mtx=nullp
 	for (auto& cmd : sccs.SCCs) { //cout << "Тип сообщения: " << cmd.type << " команда: " << cmd.command << endl; 
 		switch ((SC_Com_type)cmd.type) {
 		case SC_Com_type::setCntShot: cnt_shot = stoi(cmd.command); break;
+		case SC_Com_type::setSBF: sbf = stoi(cmd.command); break;
 		case SC_Com_type::setPl1Name: pl1->Name = cmd.command; break;
 		case SC_Com_type::setPl2Name: pl2->Name = cmd.command; break;
 		case SC_Com_type::setPl1type: {
@@ -1454,9 +1457,13 @@ string GetShot(Player* pl, int** mtx)
 	switch (pl->pm)
 	{
 	case Player_Mode::comp: 	// грає комп'ютер
+		if (WIN_CNT - pl->kill <= 3)
+		{
+			pl->cnt_shots = 1;
+		}
 		for (int f = 1; f <= pl->cnt_shots; f++)
 		{
-			s_shots += GetCompShot(pl, mtx);
+			s_shots += GetCompShot(pl, mtx) + ",";
 			pl->myNewShots.push_back(pl->myNewShot);
 		}break;
 	case Player_Mode::human: 	// грає людина
@@ -1604,7 +1611,7 @@ string MakeShot(Player* pl, int** mtx, Player* pl_e=nullptr)
 				pl->OnlyOneSR(ShotRes::TryAgain);
 				if (pl->pm == Player_Mode::human) {
 					SetColor(Red);
-					cout << pl->Name << ", ви вже поцілили в цю точку, оберіть іншу!\n";
+					cout << pl->Name << ", ви вже поцілили в цю точку "<< newS.to_txt() << " оберіть іншу!\n";
 					SetColor();
 					system("pause");
 				}
@@ -1701,6 +1708,7 @@ void Shot(Player* pl, int** mtx, Player* pl_e, int** mtx_e) //, Player* pl_enemy
 }
 
 #pragma endregion
+
 //Створення ігрового поля
 int** MakeMtx(int sizesbf)
 {
@@ -1713,9 +1721,12 @@ long M_Game()
 {
 	bool cont = true;
 	srand(static_cast<unsigned int>(time(NULL))); // генератор довільних чисел
+	Game_ChatSC1(); // початковий чат для обміну параметрами сервера з клієнтом
+	pl1->cnt_shots = cnt_shot;
+	pl2->cnt_shots = cnt_shot;
 	mtx1= MakeMtx(sbf); //створюємо поле бою для 1 гравця
 	mtx2= MakeMtx(sbf); //створюємо поле бою для 2 гравця
-	Game_ChatSC1(); // початковий чат для обміну параметрами сервера з клієнтом
+	
 	if (_Game_Mode == enGame_Mode::net && _Game_Place == enGame_Place::client)
 	{
 		if(pl1->pm==Player_Mode::client) CHM_NetClientPlayer(2, pl2);
@@ -1724,7 +1735,7 @@ long M_Game()
 	system("cls");	gotoxy(0, 0); cout << "Гра";
 	//По режиму ГРИ вибрати генерацію ІГРОВИХ ПОЛІВ
 	switch (_Game_Mode)
-	{
+	{ 
 	case enGame_Mode::loc:// ДЛЯ ЛОКЛЬНОЇ гри генерація обох полів з кораблями
 		SetShipToBattleField(pl1, mtx1,sbf);
 		SetShipToBattleField(pl2, mtx2,sbf);
@@ -1819,7 +1830,7 @@ long M_Game()
 	Show2(mtx1, mtx2, pl1, pl2);
 	cout << endl <<" Гра тривала: " << (t_end - t_start) / CLOCKS_PER_SEC << " сек. ";
 	system("pause");
-//Трохи почисти пам'ять - видалення масивів ігрових полів
+	//Трохи почисти пам'ять - видалення масивів ігрових полів
 	if (mtx1 != nullptr) delete []mtx1;
 	if (mtx2 != nullptr) delete []mtx2;
 	if (_Game_Mode == enGame_Mode::net && _Game_Place == enGame_Place::client)
@@ -1832,7 +1843,8 @@ long M_Game()
 	}
 	return (t_end - t_start);
 }
-#pragma region SeaBattle_Shot_Function
+
+#pragma region SeaBattle_Test_Function
 void Test_SB()
 {
 	fstream Test_out("SB_Test.txt", ios::app); //, ios::app
