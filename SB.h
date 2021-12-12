@@ -173,6 +173,7 @@ enum class SC_Com_type
 {
 	none,
 	runExitLoop,
+	stopGame,
 	ans_ok,
 	ans_error,
 	setPl1Name, // змінити назву гравця 1
@@ -260,8 +261,8 @@ struct SC_Comands
 //Структура Point - Точка
 struct Point {
 public: int x, y;
-	 //  int bound = sbf;
-	//Створення ТОЧКИ за межами
+	  //int bound = sbf;
+//Створення ТОЧКИ за межами
 	  Point() { x = -1; y = -1; };
 	  Point(int x1, int y1) { x = x1; y = y1; };
 	  bool valid() {
@@ -277,7 +278,7 @@ struct Desk : public Point{
 public: 
 	  int value = 0;
 	  bool alive = true; // живая ПАЛУБА
-	 // int bound = sbf;
+	  //int bound = sbf;
 	  Desk() { x = -1; y = -1; }; //створення пустої палуби
 	  Desk(int x1, int y1) { x = x1; y = y1; }; // створення палуби з координатами х,у
 	  Desk(Point pt) { x = pt.y; y = pt.y; }; // створення палуби з точкою
@@ -422,6 +423,8 @@ public:
 	string strMyShotsRes;
 	//Повернути в строку результати Нових Пострілів з вектору Нових пострілів
 	string strMyNewShotsRes() { string sr; 		for (auto& s : myNewShots) { sr += int(s.shres) + ","; } return sr; }
+	//Повернути в строку результати Нових Пострілів з вектору Нових пострілів
+	string strMyNewShotsResultsTxt() { string sr; 		for (auto& s : myNewShots) { sr += Shot_Result[int(s.shres)] + ","; } return sr; }
 	//Повернути в строку Нові Постріли з вектору Нових пострілів
 	string strMyNewShots() {
 		string ss; 
